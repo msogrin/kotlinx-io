@@ -1,6 +1,7 @@
 apply plugin: 'kotlin-multiplatform'
 apply plugin: 'kotlin-allopen'
 apply plugin: 'kotlinx.benchmark'
+apply plugin: 'kotlinx-serialization'
 
 // how to apply plugin to a specific source set?
 allOpen {
@@ -43,9 +44,10 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
-                implementation "org.jetbrains.kotlinx:kotlinx.benchmark.runtime:$benchmarks_version"
                 implementation project(":kotlinx-io")
+                implementation project(":kotlinx-io-playground")
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-common"
+                implementation "org.jetbrains.kotlinx:kotlinx.benchmark.runtime:$benchmarks_version"
             }
         }
         commonTest {
@@ -56,23 +58,26 @@ kotlin {
         }
         jvmMain {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                api("com.google.code.gson:gson:$gson_version")
+                api("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+                api("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version")
             }
         }
         jvmTest {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-test'
-                implementation 'org.jetbrains.kotlin:kotlin-test-junit'
+                implementation "org.jetbrains.kotlin:kotlin-test"
+                implementation "org.jetbrains.kotlin:kotlin-test-junit"
             }
         }
         jsMain {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
             }
         }
         jsTest {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-test-js'
+                implementation "org.jetbrains.kotlin:kotlin-test-js"
             }
         }
 
@@ -87,9 +92,16 @@ kotlin {
 benchmark {
     configurations {
         main {
-            iterations = 1000 // number of iterations
-            iterationTime = 1
-            iterationTimeUnit = "s"
+            iterations = 10 // number of iterations
+            warmups = 10
+            iterationTime = 1000
+
+            iterationTimeUnit = "ms"
+
+            if (project.hasProperty("benchmarkName")) {
+                def benchmarkName = project.getProperty("benchmarkName")
+                include(benchmarkName)
+            }
         }
     }
 

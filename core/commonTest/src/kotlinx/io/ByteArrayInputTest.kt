@@ -1,6 +1,7 @@
 package kotlinx.io
 
 import kotlinx.io.buffer.*
+import kotlinx.io.bytes.*
 import kotlin.test.*
 
 class ByteArrayInputTest {
@@ -96,4 +97,22 @@ class ByteArrayInputTest {
         val line = "Hello, world\n"
         assertEquals(line, ByteArrayInput(line.encodeToByteArray()).readByteArray().decodeToString())
     }
+
+    @Test
+    fun testReadLastByte() {
+        val size = 2 * 1024 * 1024
+        val input = buildInput {
+            writeByteArray(ByteArray(size) { 42 })
+        }
+
+        assertEquals(size, input.remaining)
+
+        val result = input.preview {
+            discard(size - 1)
+            readByte()
+        }
+
+        assertEquals(42, result)
+    }
+
 }

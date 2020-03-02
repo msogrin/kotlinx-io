@@ -2,7 +2,6 @@ package kotlinx.io.gzip
 
 import kotlinx.io.*
 import kotlinx.io.buffer.*
-import java.io.*
 import java.util.zip.*
 
 class GzipInput(private val original: Input) : Input() {
@@ -12,6 +11,7 @@ class GzipInput(private val original: Input) : Input() {
             return original.readByte().toInt()
         }
     }
+
     private val deflater = InflaterInputStream(inputStream)
 
     override fun closeSource() {

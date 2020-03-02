@@ -12,7 +12,7 @@ fun main() {
     gzipOutput.close()
     val array = bao.toByteArray()
     println("Original: " + str.encodeToByteArray().contentToString())
-    println("Compressed: " +  array.contentToString())
+    println("Compressed: " + array.contentToString())
 
     val gzipInput = GzipInput(ByteArrayInput(array))
     println(gzipInput.readUtf8String(str.length))

@@ -2,7 +2,6 @@ package kotlinx.io.gzip
 
 import kotlinx.io.*
 import kotlinx.io.buffer.*
-import java.io.*
 import java.util.zip.*
 
 class GzipOutput(private val original: Output) : Output() {

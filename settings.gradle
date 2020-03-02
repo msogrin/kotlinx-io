@@ -20,3 +20,6 @@ project(":benchmarks").name = 'kotlinx-io-benchmarks'
 
 include ':playground'
 project(":playground").name = 'kotlinx-io-playground'
+
+include ":samples"
+project(":samples").name = 'kotlinx-io-samples'

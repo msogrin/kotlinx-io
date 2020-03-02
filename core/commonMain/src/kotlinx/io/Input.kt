@@ -137,9 +137,10 @@ public abstract class Input : Closeable {
 
             return readBufferRange { buffer, startOffset, endOffset ->
                 destination.writeBuffer(buffer, startOffset, endOffset)
-                endOffset
+                endOffset - startOffset
             }
         }
+
         // No bytes in cache: fill [destination] buffer direct.
         return destination.writeBuffer { buffer, startIndex, endIndex ->
             startIndex + fill(buffer, startIndex, endIndex)
@@ -275,8 +276,7 @@ public abstract class Input : Closeable {
         var remaining = count
         while (remaining > 0) {
             val skipCount = readBufferRange { _, startOffset, endOffset ->
-                val skipCount = min(remaining, endOffset - startOffset)
-                startOffset + skipCount
+                min(remaining, endOffset - startOffset)
             }
 
             if (skipCount == 0) {
@@ -405,7 +405,7 @@ public abstract class Input : Closeable {
     }
 
     /**
-     * Allows direct read from a buffer, operates on startOffset + endOffset (exclusive), returns new position.
+     * Allows direct read from a buffer, operates on startOffset + endOffset (exclusive), returns consumed bytes count.
      * NOTE: Dangerous to use, if non-local return then position will not be updated.
      *
      * @return consumed bytes count
@@ -415,10 +415,9 @@ public abstract class Input : Closeable {
             return 0
         }
 
-        val newPosition = reader(buffer, position, limit)
-        val result = newPosition - position
-        position = newPosition
-        return result
+        val consumed = reader(buffer, position, limit)
+        position += consumed
+        return consumed
     }
 
     /**

@@ -467,7 +467,11 @@ public abstract class Input : Closeable {
         }
 
         val bytes = preview ?: startPreview()
-        return readThroughPreview(bytes)
+        return fillAndStoreInPreview(bytes)
+    }
+
+    private fun prepareNewBuffer() {
+        buffer = bufferPool.borrow()
     }
 
     /**
@@ -487,13 +491,14 @@ public abstract class Input : Closeable {
      * The [bytes] shouldn't be empty.
      */
     private fun fetchFromPreviewAndDiscard(bytes: Bytes): Int {
-        bufferPool.recycle(buffer)
         bytes.discardFirst()
 
         if (bytes.isEmpty()) {
             previewBytes = null
             return fillFromSource()
         }
+
+        bufferPool.recycle(buffer)
 
         bytes.pointed(0) { newBuffer, newLimit ->
             position = 0
@@ -504,12 +509,13 @@ public abstract class Input : Closeable {
         return limit
     }
 
-    private fun readThroughPreview(bytes: Bytes): Int {
+    private fun fillAndStoreInPreview(bytes: Bytes): Int {
         val nextIndex = previewIndex + 1
 
         if (bytes.isAfterLast(nextIndex)) {
+            prepareNewBuffer()
             val fetched = fillFromSource() // received data can be empty
-            bytes.append(buffer, limit) // buffer can be empty
+            bytes.append(buffer, fetched) // buffer can be empty
             previewIndex = nextIndex
             return fetched
         }
@@ -526,8 +532,8 @@ public abstract class Input : Closeable {
     }
 
     private fun fillFromSource(): Int {
-        val source = bufferPool.borrow()
-        val fetched = fill(source)
+        val fetched = fill(buffer, 0, buffer.size)
+        position = 0
         limit = fetched
         position = 0
         buffer = source

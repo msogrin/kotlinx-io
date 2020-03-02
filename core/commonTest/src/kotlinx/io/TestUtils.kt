@@ -10,11 +10,3 @@ fun assertArrayEquals(expected: ByteArray, actual: ByteArray) {
 fun ByteArray.toHexString(): String = "0x" + joinToString("") {
     it.toUInt().toString(16).padStart(2, '0')
 }
-
-internal fun Bytes.useInput(block: Input.() -> Unit) {
-    try {
-        block(input())
-    } finally {
-        close()
-    }
-}

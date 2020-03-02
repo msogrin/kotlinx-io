@@ -22,11 +22,7 @@ kotlin {
     }
 
     js {
-        nodejs {
-            testTask {
-                debug = false
-            }
-        }
+        nodejs()
         browser()
     }
 

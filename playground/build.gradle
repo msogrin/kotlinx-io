@@ -1,7 +1,29 @@
-apply plugin: 'kotlin-multiplatform'
+plugins {
+    id "kotlin-multiplatform"
+    id "kotlinx-serialization"
+    id "jacoco"
+}
+
+def ideaActive = System.getProperty("idea.active") == "true"
 
 kotlin {
     jvm()
+
+    if (!ideaActive) {
+        linuxX64()
+        mingwX64()
+        macosX64()
+        iosX64()
+        iosArm64()
+        iosArm32()
+    } else {
+        macosX64("native")
+    }
+
+    js {
+        nodejs()
+        browser()
+    }
 
     sourceSets.all {
         kotlin.srcDirs = ["$it.name/src"]
@@ -10,12 +32,93 @@ kotlin {
             progressiveMode = true
         }
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            api "org.jetbrains.kotlin:kotlin-stdlib"
+            api project(":kotlinx-io")
+            api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serialization_version")
+        }
+
+        jvmMain.dependencies {
+            api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+            api "com.squareup.okio:okio:1.0.0"
+            api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version")
+        }
+
+        commonTest {
+            dependencies {
+                api "org.jetbrains.kotlin:kotlin-test-common"
+                api "org.jetbrains.kotlin:kotlin-test-annotations-common"
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                api "org.jetbrains.kotlin:kotlin-test-junit"
+            }
+        }
+
+        nativeMain {
+            dependencies {
+                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$serialization_version")
+            }
+        }
+
+        jsMain {
+            dependencies {
+                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serialization_version")
+            }
+        }
+
+        jsTest {
+            dependencies {
+                api "org.jetbrains.kotlin:kotlin-test-js"
+            }
+        }
+
+        if (!ideaActive) {
+            nativeMain {
+                dependsOn commonMain
+            }
+
+            nativeTest
+
+            configure([macosX64Main, linuxX64Main, mingwX64Main, iosX64Main, iosArm32Main, iosArm64Main]) {
+                dependsOn nativeMain
+            }
+
+            configure([macosX64Test, linuxX64Test, mingwX64Test, iosX64Test, iosArm32Test, iosArm64Test]) {
+                dependsOn nativeTest
+            }
+        }
+    }
 }
 
-kotlin.sourceSets.jvmMain.dependencies {
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api project(":kotlinx-io")
-    api "com.squareup.okio:okio:1.0.0"
-
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("${buildDir}/jacoco-reports")
 }
 
+task testCoverage(type: JacocoReport, dependsOn: jvmTest) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports."
+
+    def coverageSourceDirs = [
+            "commonMain/src",
+            "jvmMain/src"
+    ]
+
+    classDirectories.from files(fileTree(dir: "${buildDir}/classes/kotlin/jvm/"))
+    sourceDirectories.from files(coverageSourceDirs)
+    additionalSourceDirs.from files(coverageSourceDirs)
+    executionData.from files("${buildDir}/jacoco/jvmTest.exec")
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+
+        html.destination file("${buildDir}/jacoco-reports/html")
+    }
+}

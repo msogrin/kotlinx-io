@@ -2,8 +2,35 @@ package kotlinx.io.text
 
 import kotlinx.io.*
 import kotlinx.io.buffer.*
+import kotlinx.io.text.utf8.*
+import kotlin.math.*
 
 private const val lastASCII = 0x7F.toChar()
+
+public fun Output.writeASCIIString(text: CharSequence, index: Int = 0, length: Int = text.length - index): Int {
+    var current = index
+    var remaining = length - index
+    while (remaining > 0) {
+        val written = writeBuffer { buffer, bufferStart, bufferEnd ->
+            val count = min(bufferEnd - bufferStart, remaining)
+
+            for (offset in 0 until count) {
+                buffer.storeByteAt(bufferStart + offset, text[current + offset].toByte())
+            }
+
+            bufferStart + count
+        }
+
+        if (written == 0) {
+            unexpectedEOF()
+        }
+
+        current += written
+        remaining -= written
+    }
+
+    return length - index
+}
 
 /**
  * Write [length] bytes in [text] starting from offset [index] to output.

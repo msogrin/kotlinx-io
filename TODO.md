@@ -1,21 +1,19 @@
  # TODO
 - Design
-    - Input: bypass source exceptions in `Input.fill`
+    - Exceptions
+        - bypass source exceptions in `Input.fill`
+        - eof exceptions(consider removing EOFException in read without fixed size)
     - Input: `eof` vs `exhausted`
     - Output: Appendable
-    - `Input.discard()`, discardExact
     - Idempotent close
+    - `ByteInput.preview(Input.() ->)` without remaining.
     - Make `fill` public (and then rename it) to enable zero-copy delegates
 - Implementation
-    -  Input
-    -  Output
-    -  Index preconditions
-    - `bytesInput = buildInput { BytesOutput -> }`
-        - `Bytes.createInput()` copy on consume
-    - Introduce `BytesInput` and `BytesOutput` `(Input/Output + size, remaining)`
-    - Introduce `readByteArray(), copyTo(output)`
-    - Introduce `Input.copyAvailableTo(Output | Buffer)`: consume single buffer(wait if no buffer available)
+    - Console: shared buffer
+    - Index preconditions
     - Prototype `PipedOutput`
+    - Check `equals & hashcode`
+    - `Input.discard()`, discardExact
 - Test
     - Verify pool has no leaks
 - Documentation
@@ -23,21 +21,18 @@
     - Input
     - Output
     - Input operations
-    - Interop
-       - InputStream, OutputStream
        - okio: Source, Sink
     - Text input
     - Text output
 - Benchmarks
-    -  Input: read byte array
+    - Input: read byte array
     - Output: all benchmarks
 - Samples
     - Input and Output over 
-        - File
-        - Socket
         - RSocket
         - node.js/web stream
+        - async socket
+        - posix read write
 - Maintenance
-    - Dokka generation
-    - API Check
+    - binary API validator
 

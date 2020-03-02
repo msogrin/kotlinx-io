@@ -4,6 +4,61 @@ import kotlinx.io.buffer.*
 import kotlin.math.*
 
 /**
+ * Call [block] for each byte in [Input], until predicate returns false.
+ *
+ * Each byte will be consumed from input.
+ */
+public inline fun Input.readUntil(crossinline block: (Byte) -> Boolean): Int {
+    var count = 0
+    var done = false
+    while (!done) {
+        val consumed = readBufferRange { buffer, startOffset, endOffset ->
+            for (index in startOffset until endOffset) {
+                if (!block(buffer[index])) {
+                    done = true
+                    return@readBufferRange index - startOffset + 1
+                }
+            }
+
+            return@readBufferRange endOffset - startOffset
+        }
+
+        if (consumed == 0) {
+            break
+        }
+
+        count += consumed
+    }
+
+    return count
+}
+
+public inline fun Input.readUntilExclusive(crossinline block: (Byte) -> Boolean): Int {
+    var count = 0
+    var done = false
+    while (!done) {
+        val consumed = readBufferRange { buffer, startOffset, endOffset ->
+            for (index in startOffset until endOffset) {
+                if (!block(buffer[index])) {
+                    done = true
+                    return@readBufferRange index - startOffset
+                }
+            }
+
+            return@readBufferRange endOffset - startOffset
+        }
+
+        if (consumed == 0) {
+            break
+        }
+
+        count += consumed
+    }
+
+    return count
+}
+
+/**
  * Copies the [Input] content to [destination].
  * The [Input] is not closed at the end of the copy.
  *

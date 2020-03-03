@@ -105,7 +105,7 @@ private sealed class ioAbstractJsonTreeOutput(
 
         if (writePolymorphic) {
             writePolymorphic = false
-            encoder.putElement(configuration.classDiscriminator, JsonPrimitive(desc.name))
+            encoder.putElement(configuration.classDiscriminator, JsonPrimitive(desc.serialName))
         }
 
         return encoder

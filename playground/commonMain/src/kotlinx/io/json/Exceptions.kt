@@ -23,7 +23,7 @@ fun ioJsonUnknownKeyException(position: Int, key: String) = JsonDecodingExceptio
 
 
 fun ioJsonMapInvalidKeyKind(keyDescriptor: SerialDescriptor) = kotlinx.serialization.json.JsonException(
-    "Value of type ${keyDescriptor.name} can't be used in json as map key. " +
+    "Value of type ${keyDescriptor.serialName} can't be used in json as map key. " +
             "It should have either primitive or enum kind, but its kind is ${keyDescriptor.kind}.\n" +
             "You can convert such maps to arrays [key1, value1, key2, value2,...] with 'allowStructuredMapKeys' flag in JsonConfiguration."
 )

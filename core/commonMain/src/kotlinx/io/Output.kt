@@ -82,6 +82,8 @@ public abstract class Output(
         if (closeException !== null) {
             throw closeException
         }
+
+        bufferPool.recycle(buffer)
     }
 
     /**
@@ -91,6 +93,11 @@ public abstract class Output(
      */
     protected abstract fun flush(source: Buffer, startIndex: Int, endIndex: Int)
 
+    protected open fun flushAndUpdate(source: Buffer, startIndex: Int, endIndex: Int): Buffer {
+        flush(source, startIndex, endIndex)
+        return source
+    }
+
     /**
      * Closes the underlying source of data used by this output.
      * This method is invoked once the output is [closed][close].
@@ -98,8 +105,7 @@ public abstract class Output(
     protected abstract fun closeSource()
 
     private fun flushBuffer() {
-        flush(buffer, 0, position)
-        buffer = pool.borrow()
+        buffer = flushAndUpdate(buffer, 0, position)
         position = 0
     }
 

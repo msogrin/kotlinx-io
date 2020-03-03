@@ -106,6 +106,8 @@ private class JsonPrimitiveInput(json: ioJson, override val obj: JsonPrimitive) 
         pushTag(PRIMITIVE_TAG)
     }
 
+    override fun decodeElementIndex(descriptor: SerialDescriptor): Int = 0
+
     override fun currentElement(tag: String): JsonElement {
         require(
             tag === PRIMITIVE_TAG
@@ -130,7 +132,7 @@ private open class JsonTreeInput(json: ioJson, override val obj: JsonObject) : A
     override fun currentElement(tag: String): JsonElement = obj.getValue(tag)
 
     override fun endStructure(desc: SerialDescriptor) {
-        if (!configuration.strictMode || desc is PolymorphicClassDescriptor) return
+        if (!configuration.strictMode || desc is PolymorphicKind) return
 
         // Validate keys
         val names = HashSet<String>(desc.elementsCount)

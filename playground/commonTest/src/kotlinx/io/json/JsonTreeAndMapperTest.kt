@@ -16,9 +16,7 @@
 
 package kotlinx.io.json
 
-import kotlinx.io.json.*
 import kotlinx.serialization.*
-import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 import kotlin.test.*
 
@@ -31,7 +29,17 @@ sealed class DummyEither {
 }
 
 object EitherSerializer : KSerializer<DummyEither> {
-    override val descriptor: SerialDescriptor = SerialClassDescImpl("DummyEither")
+    @OptIn(ImplicitReflectionSerializer::class)
+    override val descriptor: SerialDescriptor = SerialDescriptor("Either", PolymorphicKind.SEALED) {
+        val leftDescriptor = SerialDescriptor("Either.Left") {
+            element<String>("errorMsg")
+        }
+        val rightDescriptor = SerialDescriptor("Either.Right") {
+            element<Payload>("data")
+        }
+        element("left", leftDescriptor)
+        element("right", rightDescriptor)
+    }
 
     override fun deserialize(decoder: Decoder): DummyEither {
         val input = decoder as? ioJsonInput ?: throw SerializationException("This class can be loaded only by Json")
@@ -49,7 +57,8 @@ object EitherSerializer : KSerializer<DummyEither> {
         val tree = when (obj) {
             is DummyEither.Left -> JsonObject(mapOf("error" to JsonLiteral(obj.errorMsg)))
             is DummyEither.Right -> output.json.toJson(
-                Payload.serializer(), obj.data)
+                Payload.serializer(), obj.data
+            )
         }
 
         output.encodeJson(tree)
@@ -74,7 +83,8 @@ class JsonTreeAndMapperTest {
             assertEquals(0, id)
             assertEquals(
                 DummyEither
-                    .Right(Payload(42, 43, "Hello world")), payload)
+                    .Right(Payload(42, 43, "Hello world")), payload
+            )
             assertEquals(1000, timestamp)
         }
     }

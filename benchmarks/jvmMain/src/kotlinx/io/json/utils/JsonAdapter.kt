@@ -40,7 +40,7 @@ object KxJson : JsonAdapter {
 @UseExperimental(ImplicitReflectionSerializer::class)
 object SerializationJson : JsonAdapter {
     override fun <T> parse(content: String, type: KType, clazz: Class<T>): T =
-        Json.parse(serializer(type), content) as T
+        Json.nonstrict.parse(serializer(type), content) as T
 
     override fun <T> parse(content: InputStream, type: KType, clazz: Class<T>): T = error("unsuppored")
     override fun <T> parse(content: Input, type: KType, clazz: Class<T>): T {
@@ -48,7 +48,7 @@ object SerializationJson : JsonAdapter {
     }
 
     override fun <T> encode(data: T, type: KType): String =
-        Json.stringify(serializer(type), data)
+        Json.nonstrict.stringify(serializer(type), data)
 
     override fun <T> encode(data: T, type: KType, outputStream: OutputStream) = error("unsupported")
     override fun <T> encode(data: T, type: KType, output: Output) {

@@ -7,9 +7,8 @@ import kotlinx.io.bytes.*
 import kotlinx.io.pool.*
 import kotlin.test.*
 
-class InputOutputTest {
-
-    val EmptyInput = object : Input() {
+class InputOutputTest : LeakDetector() {
+    val EmptyInput: Input = object : Input() {
         override fun fill(buffer: Buffer, startIndex: Int, endIndex: Int): Int {
             return 0
         }
@@ -34,12 +33,12 @@ class InputOutputTest {
         var instance: Buffer = Buffer.EMPTY
         var result: Buffer = Buffer.EMPTY
 
-        val input: Input = LambdaInput { buffer, start, end ->
+        val input: Input = LambdaInput(pool) { buffer, start, end ->
             instance = buffer
             return@LambdaInput 42
         }
 
-        val output = LambdaOutput { source, startIndex, endIndex ->
+        val output = LambdaOutput(pool) { source, startIndex, endIndex ->
             result = source
             assertEquals(42, endIndex)
         }
@@ -49,6 +48,9 @@ class InputOutputTest {
 
         assertNotNull(instance)
         assertTrue(instance === result)
+
+        input.close()
+        output.close()
     }
 
     @Test
@@ -303,7 +305,7 @@ class InputOutputTest {
     @Test
     fun testReadAvailableToRange() {
         var executed = false
-        val input: Input = object : Input() {
+        val input: Input = object : Input(pool) {
             override fun fill(buffer: Buffer, startIndex: Int, endIndex: Int): Int {
                 assertEquals(1024, endIndex)
                 executed = true
@@ -318,12 +320,14 @@ class InputOutputTest {
         val end = input.readAvailableTo(buffer, 1)
         assertTrue(executed)
         assertEquals(1023, end)
+
+        input.close()
     }
 
     @Test
     fun testReadUntilNotConsume() {
         var count = 0
-        val input = LambdaInput { buffer, startIndex, endIndex ->
+        val input = LambdaInput(pool) { buffer, startIndex, endIndex ->
             when (count++) {
                 0 -> {
                     buffer.storeByteAt(startIndex, 'a'.toByte())
@@ -339,12 +343,15 @@ class InputOutputTest {
 
         assertEquals(1, input.readUntil { it != 'a'.toByte() })
         assertEquals('b'.toByte(), input.readByte())
+
+        input.close()
     }
 
     @Test
     fun testReadUntilEof() {
-        val input = LambdaInput { _, _, _ -> 0 }
+        val input = LambdaInput(pool) { _, _, _ -> 0 }
         input.readUntil { true }
+        input.close()
     }
 
     private fun checkException(block: () -> Unit) {

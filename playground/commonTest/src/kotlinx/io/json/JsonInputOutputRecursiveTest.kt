@@ -198,7 +198,7 @@ class JsonInputOutputRecursiveTest : JsonTestBase() {
     }
 
     private object EitherSerializer : KSerializer<DummyEither> {
-        override val descriptor: SerialDescriptor = SerialClassDescImpl("DummyEither")
+        override val descriptor: SerialDescriptor = SerialDescriptor("Either", PolymorphicKind.SEALED)
 
         override fun deserialize(decoder: Decoder): DummyEither {
             val jsonReader = decoder as? ioJsonInput
@@ -249,8 +249,10 @@ class JsonInputOutputRecursiveTest : JsonTestBase() {
         private const val typeNameA = "a"
         private const val typeNameB = "b"
 
-        override val descriptor: SerialDescriptor
-            get() = SerialClassDescImpl("DummyRecursive")
+        override val descriptor: SerialDescriptor = SerialDescriptor("SealedRecursive", PolymorphicKind.SEALED) {
+            element("a", DummyRecursive.A.serializer().descriptor)
+            element("b", DummyRecursive.B.serializer().descriptor)
+        }
 
         override fun serialize(encoder: Encoder, obj: DummyRecursive) {
             if (encoder !is ioJsonOutput) throw SerializationException("This class can be saved only by JSON")

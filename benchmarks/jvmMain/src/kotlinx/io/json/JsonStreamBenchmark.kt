@@ -64,6 +64,7 @@ class JsonStreamBenchmark {
      * kotlinx.io.json.JsonStreamBenchmark.benchmarkWrite | datasetName=twitter, jsonName=gson
      * Success: 2.836 ±(99.9%) 0.334 ms/op [Average]
      */
+    @OptIn(InternalSerializationApi::class)
     @Benchmark
     fun benchmarkWrite(): ByteArrayOutputStream {
         val stream = ByteArrayOutputStream()

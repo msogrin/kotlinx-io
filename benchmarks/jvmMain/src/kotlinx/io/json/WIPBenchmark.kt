@@ -1,5 +1,3 @@
-@file:UseExperimental(ExperimentalStdlibApi::class)
-
 package kotlinx.io.json
 
 import kotlinx.io.*
@@ -43,16 +41,19 @@ class WIPBenchmark {
 //    fun benchmarkParseCanada() = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
 
-    @Benchmark
-    fun benchmarkWrite(): Output {
-        val stream = BytesOutput()
-        KxJson.encode(canadaData, typeOf<Canada>())
-        return stream
-    }
+//    @Benchmark
+//    fun benchmarkWrite(): Output {
+//        val stream = BytesOutput()
+//        KxJson.encode(canadaData, typeOf<Canada>())
+//        return stream
+//    }
+
 
     companion object {
         private val canada = Resource("canada.json").readText()
         private val canadaBytes = canada.toByteArray()
+
+        @OptIn(ExperimentalStdlibApi::class)
         private val canadaData = KxJson.parse(canada, typeOf<Canada>(), Canada::class.java)
 
         private val smallTextBytes = "\u0422\u0432\u0437.".toByteArray()

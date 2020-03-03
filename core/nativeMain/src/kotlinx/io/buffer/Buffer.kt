@@ -45,3 +45,7 @@ public inline fun <R> Buffer.usePointer(block: (pointer: CPointer<ByteVar>) -> R
  */
 internal actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer =
     Buffer(array, startIndex, endIndex - startIndex)
+
+internal actual fun Buffer.sameAs(other: Buffer): Boolean {
+    TODO("Not yet implemented")
+}

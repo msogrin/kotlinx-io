@@ -56,7 +56,7 @@ internal class ioStreamingJsonOutput(
         encodeString(configuration.classDiscriminator)
         composer.print(COLON)
         composer.space()
-        encodeString(descriptor.name)
+        encodeString(descriptor.serialName)
     }
 
     override fun beginStructure(desc: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeEncoder {

@@ -2,7 +2,6 @@
 
 package kotlinx.io.buffer
 
-import kotlinx.io.*
 import org.khronos.webgl.*
 
 public actual class Buffer(public val view: DataView) {
@@ -31,4 +30,8 @@ internal actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): 
         content.buffer, content.byteOffset + startIndex, endIndex - startIndex
     )
     return Buffer(view)
+}
+
+internal actual fun Buffer.sameAs(other: Buffer): Boolean {
+    TODO("Not yet implemented")
 }

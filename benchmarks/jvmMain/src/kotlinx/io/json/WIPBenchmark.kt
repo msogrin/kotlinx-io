@@ -4,6 +4,7 @@ import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlinx.io.json.data.*
 import kotlinx.io.json.utils.*
+import kotlinx.io.text.*
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.*
 import kotlin.reflect.*
@@ -40,14 +41,37 @@ class WIPBenchmark {
 //    @Benchmark
 //    fun benchmarkParseCanada() = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
+//    @OptIn(ExperimentalStdlibApi::class)
+//    @Benchmark
+//    fun benchmarkWrite(): Output {
+//        val stream = BytesOutput()
+//        KxJson.encode(canadaData, typeOf<Canada>())
+//        return stream
+//    }
 
-    @OptIn(ExperimentalStdlibApi::class)
+    /**
+     * initial: Success: 6.731 ±(99.9%) 0.262 ms/op [Average]
+     * previous + explicit buffer and array size: Success: 3.048 ±(99.9%) 0.096 ms/op [Average]
+     * previous + utf8 -> ascii writer: Success: 1.408 ±(99.9%) 0.056 ms/op [Average]
+     */
     @Benchmark
-    fun benchmarkWrite(): Output {
-        val stream = BytesOutput()
-        KxJson.encode(canadaData, typeOf<Canada>())
-        return stream
-    }
+    fun benchmarkStringByteArrayWithInput(): ByteArray = buildInput(canada.length * 2) {
+        writeASCIIString(canada)
+    }.readByteArray(canadaBytes.size)
+
+//    Success: 0.280 ±(99.9%) 0.030 ms/op [Average]
+//    @Benchmark
+//    fun benchmarkStringToByteArray(): ByteArray = canada.toByteArray()
+
+//    @Benchmark
+//    fun benchmarkByteArrayToStringWithInput() {
+//
+//    }
+//
+//    @Benchmark
+//    fun benchmarkByteArrayToString() {
+//
+//    }
 
     companion object {
         private val canada = Resource("canada.json").readText()

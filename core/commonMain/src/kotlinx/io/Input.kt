@@ -230,44 +230,12 @@ public abstract class Input : Closeable {
             return false
         }
 
-        var left = size - (limit - position)
+        val left = size - (limit - position)
         if (left <= 0) {
             return true // Enough bytes in current buffer
         }
 
-        // We will fetch bytes into additional buffers, so prepare preview
-        val bytes = previewBytes ?: startPreview()
-
-        var fetchIndex = previewIndex
-        while (!bytes.isAfterLast(fetchIndex)) {
-            left -= bytes.limit(fetchIndex)
-            if (left <= 0) {
-                // Enough bytes in preview bytes
-                return true
-            }
-
-            fetchIndex++
-        }
-
-        while (left > 0) {
-            val (buffer, limit) = try {
-                val buffer = bufferPool.borrow()
-                val limit = fill(buffer)
-                buffer to limit
-            } catch (cause: Throwable) {
-                bufferPool.recycle(buffer)
-                throw cause
-            }
-
-            if (limit == 0) {
-                bufferPool.recycle(buffer)
-                return false
-            }
-
-            bytes.append(buffer, limit)
-            left -= limit
-        }
-        return true
+        return prefetchInPreview(left)
     }
 
     /**
@@ -541,6 +509,44 @@ public abstract class Input : Closeable {
         position = 0
         limit = fetched
         return fetched
+    }
+
+    private fun prefetchInPreview(count: Int): Boolean {
+        var left = count
+
+        // We will fetch bytes into additional buffers, so prepare preview
+        val bytes = previewBytes ?: startPreview()
+
+        var fetchIndex = previewIndex
+        while (!bytes.isAfterLast(fetchIndex)) {
+            left -= bytes.limit(fetchIndex)
+            if (left <= 0) {
+                // Enough bytes in preview bytes
+                return true
+            }
+
+            fetchIndex++
+        }
+
+        while (left > 0) {
+            val (buffer, limit) = try {
+                val buffer = bufferPool.borrow()
+                val limit = fill(buffer)
+                buffer to limit
+            } catch (cause: Throwable) {
+                bufferPool.recycle(buffer)
+                throw cause
+            }
+
+            if (limit == 0) {
+                bufferPool.recycle(buffer)
+                return false
+            }
+
+            bytes.append(buffer, limit)
+            left -= limit
+        }
+        return true
     }
 
     /**

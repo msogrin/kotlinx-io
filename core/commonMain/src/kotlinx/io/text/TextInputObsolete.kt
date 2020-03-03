@@ -115,6 +115,7 @@ private inline fun Input.decodeUtf8Chars(crossinline consumer: (Char) -> Boolean
         readBufferRange { buffer, startOffset, endOffset ->
             for (offset in startOffset until endOffset) {
                 val byte = buffer.loadByteAt(offset).toInt() and 0xff
+
                 when {
                     byte and 0x80 == 0 -> { // ASCII
                         if (byteCount != 0)
@@ -160,7 +161,6 @@ private inline fun Input.decodeUtf8Chars(crossinline consumer: (Char) -> Boolean
                                 value = byte and 0x3
                             }
                         }
-
                     }
                     else -> {
                         // trailing unicode byte

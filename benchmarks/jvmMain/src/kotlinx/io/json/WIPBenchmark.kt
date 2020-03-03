@@ -41,13 +41,13 @@ class WIPBenchmark {
 //    fun benchmarkParseCanada() = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
 
-//    @Benchmark
-//    fun benchmarkWrite(): Output {
-//        val stream = BytesOutput()
-//        KxJson.encode(canadaData, typeOf<Canada>())
-//        return stream
-//    }
-
+    @OptIn(ExperimentalStdlibApi::class)
+    @Benchmark
+    fun benchmarkWrite(): Output {
+        val stream = BytesOutput()
+        KxJson.encode(canadaData, typeOf<Canada>())
+        return stream
+    }
 
     companion object {
         private val canada = Resource("canada.json").readText()

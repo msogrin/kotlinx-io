@@ -50,6 +50,7 @@ class JsonBenchmark {
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkRead | datasetName=canada, jsonName=io
      * Success: 59.194 ±(99.9%) 0.238 ms/op [Average]
+     * Success: 52.861 ±(99.9%) 1.172 ms/op [Average]
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkRead | datasetName=canada, jsonName=default
      * Success: 35.438 ±(99.9%) 3.842 ms/op [Average]
@@ -60,7 +61,8 @@ class JsonBenchmark {
      * Citm
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkRead | datasetName=citm, jsonName=io
-     * Success: 23.625 ±(99.9%) 3.009 ms/op [Average]
+     * Success: 23.625 ±(99.9%) 3.009 ms/op [Average
+     * Success: 16.571 ±(99.9%) 0.356 ms/op [Average]]
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkRead | datasetName=citm, jsonName=default
      * Success: 5.133 ±(99.9%) 0.358 ms/op [Average]
@@ -72,6 +74,7 @@ class JsonBenchmark {
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkRead | datasetName=twitter, jsonName=io
      * Success: 9.468 ±(99.9%) 0.629 ms/op [Average]
+     * Success: 8.097 ±(99.9%) 0.488 ms/op [Average]
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkRead | datasetName=twitter, jsonName=default
      * Success: 2.731 ±(99.9%) 0.206 ms/op [Average]
@@ -87,6 +90,7 @@ class JsonBenchmark {
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkWrite | datasetName=canada, jsonName=io
      * Success: 47.396 ±(99.9%) 4.178 ms/op [Average]
+     * Success: 51.640 ±(99.9%) 2.426 ms/op [Average]
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkWrite | datasetName=canada, jsonName=default
      * Success: 39.998 ±(99.9%) 1.937 ms/op [Average]
@@ -98,6 +102,7 @@ class JsonBenchmark {
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkWrite | datasetName=citm, jsonName=io
      * Success: 12.392 ±(99.9%) 0.769 ms/op [Average]
+     * Success: 14.929 ±(99.9%) 0.237 ms/op [Average]
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkWrite | datasetName=citm, jsonName=default
      * Success: 2.824 ±(99.9%) 0.332 ms/op [Average]
@@ -109,6 +114,7 @@ class JsonBenchmark {
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkWrite | datasetName=twitter, jsonName=io
      * Success: 10.641 ±(99.9%) 0.565 ms/op [Average]
+     * Success: 12.278 ±(99.9%) 0.757 ms/op [Average]
      *
      * kotlinx.io.json.JsonBenchmark.benchmarkWrite | datasetName=twitter, jsonName=default
      * Success: 1.470 ±(99.9%) 0.095 ms/op [Average]

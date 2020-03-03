@@ -42,7 +42,7 @@ internal class Composer(@JvmField internal val output: Output, private val json:
     }
 
     fun print(v: String) {
-        output.writeUtf8String(v)
+        output.writeASCIIString(v)
     }
 
     fun print(v: Float) {
